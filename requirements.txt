@@ -1,13 +1,5 @@
-<<<<<<< HEAD
 opencv-python
 Pillow
 numpy
 ultralytics
 safetensors
-=======
-opencv-python
-Pillow
-numpy
-ultralytics
-safetensors
->>>>>>> f9da8c93ad736ea51e4ead68abc227317aff3764
