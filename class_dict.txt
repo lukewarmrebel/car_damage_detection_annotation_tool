@@ -1,0 +1,11 @@
+  0: damage-front-windscreen
+  1: damaged-door
+  2: damaged-fender
+  3: damaged-front-bumper
+  4: damaged-head-light
+  5: damaged-hood
+  6: damaged-rear-bumper
+  7: damaged-rear-window
+  8: damaged-side-window
+  9: damaged-tail-light
+  10: quaterpanel-dent

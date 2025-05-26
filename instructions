@@ -1,0 +1,24 @@
+**Explanation of Packages:**
+
+* `opencv-python`: Essential for all image processing, manipulation, and drawing functionalities (e.g., reading/writing images, applying filters, drawing shapes).
+* `Pillow`: Used for handling image formats and converting images for display within the Tkinter GUI.
+* `numpy`: Fundamental for numerical operations, particularly for image data which is often represented as NumPy arrays by OpenCV.
+
+### How to Run
+
+1.  **Save the Code:** Save the provided Python code as `Car_damage_annotation_compression_tool.py` in a folder (e.g., `Car_damage_annotation_compression_tool`).
+2.  **Create `requirements.txt`:** In the *same folder* as your Python script, create a file named `requirements.txt` and paste the content provided above.
+3.  **Open Terminal/Command Prompt:** Navigate to the root of your project directory using the `cd` command:
+    ```bash
+    cd C:\Users\ADMIN\Desktop\Office stuff\FT BI tool\Car_damage_annotation_compression_tool
+    ```
+4.  **Install Required Packages:** Run the following command to install all dependencies listed in `requirements.txt`:
+    ```bash
+    pip install -r requirements.txt
+    ```
+5.  **Run the Application:** Execute the script using Python:
+    ```bash
+    python Car_damage_annotation_compression_tool.py
+    ```
+
+The application window will then appear, ready for you to start annotating and compressing your images!
