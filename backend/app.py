@@ -456,7 +456,12 @@ def call_gemini(prompt: str, image_bytes: bytes, model_name: str, api_key: str) 
         genai.configure(api_key=api_key)
         generation_config = genai.GenerationConfig(max_output_tokens=1024)
         gemini_model = genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
-        image_part = {"mime_type": "image/jpeg", "data": image_bytes}
+        image_part = {
+            "inline_data": {
+                "mime_type": "image/jpeg",
+                "data": base64.b64encode(image_bytes).decode("utf-8"),
+            }
+        }
         response = gemini_model.generate_content([image_part, prompt])
         return response.text
     except Exception as e:
@@ -495,7 +500,7 @@ def call_openai(prompt: str, image_bytes: bytes, model_name: str, api_key: str) 
         raise HTTPException(status_code=502, detail=f"openai API error: {e}")
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 def root() -> Response:
     index_path = STATIC_DIR / "index.html"
     if index_path.exists():
@@ -655,15 +660,9 @@ async def ai_analysis(
         elif request.provider == "openai":
             ai_raw = call_openai(prompt, image_bytes, request.model, x_ai_api_key)
     except HTTPException:
-        # Provider call failed — return formula-only results (graceful degradation)
-        session.annotations = detections
-        return DetectResponse(
-            image_id=request.image_id,
-            filename=session.filename,
-            width=image_width,
-            height=image_height,
-            detections=detections,
-        )
+        # Re-raise so the client receives the actual error (502) instead of silently
+        # returning formula-only results — callers need to know the AI call failed.
+        raise
 
     # Parse AI JSON response; degrade gracefully on parse failure
     ai_data: dict = {}
