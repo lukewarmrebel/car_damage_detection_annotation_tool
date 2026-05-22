@@ -9,6 +9,10 @@
   --accent: #2fb8a6;
   --accent-2: #ffb84d;
   --danger: #ff5a69;
+  --severity-minor: #ffd700;
+  --severity-moderate: #ff8c00;
+  --severity-severe: #ff3333;
+  --severity-fp: #888888;
 }
 
 * {
@@ -274,6 +278,17 @@ dialog p {
   border: 1px solid var(--line);
   border-radius: 6px;
 }
+
+.summary-panel { font-size: 13px; color: var(--muted); }
+.summary-panel .summary-row { display: flex; justify-content: space-between; margin: 4px 0; }
+.severity-minor { color: var(--severity-minor); }
+.severity-moderate { color: var(--severity-moderate); }
+.severity-severe { color: var(--severity-severe); }
+.muted-text { color: var(--muted); }
+.dialog-actions { display: flex; gap: 8px; margin-top: 14px; justify-content: flex-end; }
+.batch-spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid var(--muted); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+.batch-done { color: var(--accent); font-size: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 760px) {
   body {

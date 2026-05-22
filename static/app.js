@@ -29,6 +29,16 @@ const confidenceInput = document.querySelector("#confidenceInput");
 const iouInput = document.querySelector("#iouInput");
 const zipNameInput = document.querySelector("#zipNameInput");
 const zipSizeInput = document.querySelector("#zipSizeInput");
+const aiAnalyzeBtn = document.querySelector("#aiAnalyzeBtn");
+const autoAnalyzeBtn = document.querySelector("#autoAnalyzeBtn");
+const settingsBtn = document.querySelector("#settingsBtn");
+const settingsDialog = document.querySelector("#settingsDialog");
+const aiProviderSelect = document.querySelector("#aiProviderSelect");
+const aiModelSelect = document.querySelector("#aiModelSelect");
+const aiApiKeyInput = document.querySelector("#aiApiKeyInput");
+const saveSettingsBtn = document.querySelector("#saveSettingsBtn");
+const closeSettingsBtn = document.querySelector("#closeSettingsBtn");
+const sessionSummary = document.querySelector("#sessionSummary");
 
 const state = {
   images: [],
@@ -42,6 +52,7 @@ const state = {
   dragStart: null,
   preview: null,
   yoloProcessed: new Set(),
+  aiProcessed: new Set(),
 };
 
 function activeImage() {
@@ -67,6 +78,13 @@ function hexToRgb(hex) {
 
 function rgbToCss(color) {
   return `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+}
+
+function severityColor(severity) {
+  if (severity === "minor") return [255, 215, 0];
+  if (severity === "moderate") return [255, 140, 0];
+  if (severity === "severe") return [255, 51, 51];
+  return null;
 }
 
 function resizeCanvas() {
@@ -113,8 +131,15 @@ function drawAnnotation(annotation) {
     const w = annotation.end.x - annotation.start.x;
     const h = annotation.end.y - annotation.start.y;
     ctx.strokeRect(x, y, w, h);
+    if (annotation.severity) {
+      const sc = severityColor(annotation.severity);
+      if (sc) ctx.strokeStyle = rgbToCss(sc);
+      ctx.strokeRect(x, y, w, h);
+    }
     if (annotation.class_name) {
-      const label = `${annotation.class_name} ${annotation.confidence ? Math.round(annotation.confidence * 100) + "%" : ""}`;
+      const fpTag = annotation.source === "ai-fp" ? " [?FP]" : "";
+      const sevTag = annotation.severity ? ` [${annotation.severity}]` : "";
+      const label = `${annotation.class_name}${sevTag}${fpTag} ${annotation.confidence ? Math.round(annotation.confidence * 100) + "%" : ""}`.trim();
       ctx.fillText(label, x, Math.max(y - 8 / state.scale, 12 / state.scale));
     }
   }
@@ -588,6 +613,151 @@ document.addEventListener("keydown", (event) => {
     document.querySelector(`[data-tool="${tools[Number(event.key) - 1]}"]`)?.click();
   }
 });
+
+// --- AI Settings ---
+
+function updateModelOptions() {
+  const models = {
+    claude: ["claude-haiku-4-5"],
+    gemini: ["gemini-1.5-flash"],
+    openai: ["gpt-4o-mini"],
+  };
+  aiModelSelect.innerHTML = (models[aiProviderSelect.value] || []).map(m => `<option value="${m}">${m}</option>`).join("");
+  const saved = localStorage.getItem("ai_model_" + aiProviderSelect.value);
+  if (saved) aiModelSelect.value = saved;
+}
+
+function loadSettings() {
+  aiProviderSelect.value = localStorage.getItem("ai_provider") || "claude";
+  aiApiKeyInput.value = localStorage.getItem("ai_api_key_" + aiProviderSelect.value) || "";
+  updateModelOptions();
+}
+
+function saveSettings() {
+  localStorage.setItem("ai_provider", aiProviderSelect.value);
+  localStorage.setItem("ai_api_key_" + aiProviderSelect.value, aiApiKeyInput.value);
+  localStorage.setItem("ai_model_" + aiProviderSelect.value, aiModelSelect.value);
+  setStatus("AI settings saved.");
+  settingsDialog.close();
+}
+
+aiProviderSelect.addEventListener("change", () => {
+  updateModelOptions();
+  aiApiKeyInput.value = localStorage.getItem("ai_api_key_" + aiProviderSelect.value) || "";
+});
+
+settingsBtn.addEventListener("click", () => { loadSettings(); settingsDialog.showModal(); });
+saveSettingsBtn.addEventListener("click", saveSettings);
+closeSettingsBtn.addEventListener("click", () => settingsDialog.close());
+
+// --- Session Summary ---
+
+function refreshSessionSummary() {
+  if (!sessionSummary) return;
+  const totals = { minor: 0, moderate: 0, severe: 0, unrated: 0 };
+  let totalAnnotations = 0;
+  state.images.forEach(img => {
+    img.annotations.forEach(a => {
+      totalAnnotations++;
+      if (a.severity === "minor") totals.minor++;
+      else if (a.severity === "moderate") totals.moderate++;
+      else if (a.severity === "severe") totals.severe++;
+      else totals.unrated++;
+    });
+  });
+  if (totalAnnotations === 0) {
+    sessionSummary.innerHTML = '<p class="muted-text">No annotations yet.</p>';
+    return;
+  }
+  sessionSummary.innerHTML = `
+    <div class="summary-row"><span>Total</span><span>${totalAnnotations}</span></div>
+    <div class="summary-row"><span class="severity-minor">Minor</span><span>${totals.minor}</span></div>
+    <div class="summary-row"><span class="severity-moderate">Moderate</span><span>${totals.moderate}</span></div>
+    <div class="summary-row"><span class="severity-severe">Severe</span><span>${totals.severe}</span></div>
+    <div class="summary-row"><span>Unrated</span><span>${totals.unrated}</span></div>
+  `;
+}
+
+// --- AI Analyze (single image) ---
+
+async function runAIAnalysis() {
+  const image = activeImage();
+  if (!image) return;
+  const provider = localStorage.getItem("ai_provider") || "claude";
+  const apiKey = localStorage.getItem("ai_api_key_" + provider) || "";
+  if (!apiKey) { setStatus("No API key configured. Open Settings first."); return; }
+  if (state.aiProcessed.has(image.image_id) && !confirm("AI analysis already ran for this image. Run it again?")) return;
+  aiAnalyzeBtn.disabled = true;
+  setStatus("Running AI analysis...");
+  const model = aiModelSelect ? aiModelSelect.value : (provider === "claude" ? "claude-haiku-4-5" : provider === "gemini" ? "gemini-1.5-flash" : "gpt-4o-mini");
+  const response = await fetch("/ai-analysis", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-AI-Api-Key": apiKey, "X-AI-Provider": provider, "X-AI-Model": model },
+    body: JSON.stringify({ image_id: image.image_id, provider, model }),
+  });
+  aiAnalyzeBtn.disabled = false;
+  if (!response.ok) { setStatus("AI analysis failed: " + (await response.text())); return; }
+  const result = await response.json();
+  image.annotations = result.detections;
+  image.dirty = false;
+  state.aiProcessed.add(image.image_id);
+  refreshImageList();
+  draw();
+  refreshSessionSummary();
+  setStatus(`AI analysis complete: ${result.detections.length} annotation(s).`);
+}
+
+aiAnalyzeBtn.addEventListener("click", () => runAIAnalysis().catch(e => { console.error(e); setStatus("AI analysis error."); }));
+
+// --- Batch Auto-Analyze ---
+
+function setBatchStatus(index, status) {
+  const items = imageList.querySelectorAll(".image-item");
+  if (!items[index]) return;
+  const badge = items[index].querySelector(".badge");
+  if (status === "spinner") badge.innerHTML = '<span class="batch-spinner"></span>';
+  else if (status === "done") badge.innerHTML = '<span class="batch-done">&#10003;</span>';
+  else if (status === "error") badge.innerHTML = '<span style="color:var(--danger)">!</span>';
+}
+
+async function runBatchAnalysis() {
+  if (!state.images.length) return;
+  const provider = localStorage.getItem("ai_provider") || "claude";
+  const apiKey = localStorage.getItem("ai_api_key_" + provider) || "";
+  if (!apiKey) { setStatus("No API key configured. Open Settings first."); return; }
+  autoAnalyzeBtn.disabled = true;
+  setStatus("Starting batch analysis...");
+  for (let i = 0; i < state.images.length; i++) {
+    const image = state.images[i];
+    setBatchStatus(i, "spinner");
+    const model = provider === "claude" ? "claude-haiku-4-5" : provider === "gemini" ? "gemini-1.5-flash" : "gpt-4o-mini";
+    try {
+      const response = await fetch("/ai-analysis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-AI-Api-Key": apiKey },
+        body: JSON.stringify({ image_id: image.image_id, provider, model }),
+      });
+      if (response.ok) {
+        const result = await response.json();
+        image.annotations = result.detections;
+        image.dirty = false;
+        state.aiProcessed.add(image.image_id);
+        setBatchStatus(i, "done");
+        if (i === state.current) { refreshImageList(); draw(); }
+        else refreshImageList();
+        refreshSessionSummary();
+      } else {
+        setBatchStatus(i, "error");
+      }
+    } catch (e) {
+      setBatchStatus(i, "error");
+    }
+  }
+  autoAnalyzeBtn.disabled = false;
+  setStatus("Batch analysis complete.");
+}
+
+autoAnalyzeBtn.addEventListener("click", () => runBatchAnalysis().catch(e => { console.error(e); setStatus("Batch error."); }));
 
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();

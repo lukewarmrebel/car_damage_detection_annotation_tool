@@ -18,6 +18,7 @@
           <input id="fileInput" type="file" accept="image/*" multiple />
         </label>
         <button id="exportBtn" type="button">Export ZIP (Ctrl+S)</button>
+        <button id="settingsBtn" type="button">Settings</button>
         <button id="helpBtn" type="button">Help</button>
       </div>
     </header>
@@ -44,6 +45,8 @@
             <button class="tool-btn" type="button" data-tool="crop">Crop (4)</button>
             <button class="tool-btn" type="button" data-tool="erase">Erase (5)</button>
             <button id="detectBtn" type="button">Detect (D)</button>
+            <button id="aiAnalyzeBtn" type="button">AI Analyze</button>
+            <button id="autoAnalyzeBtn" type="button">Auto-analyze all</button>
           </div>
         </section>
 
@@ -103,6 +106,13 @@
         </section>
 
         <section>
+          <h2>Session Summary</h2>
+          <div id="sessionSummary" class="summary-panel">
+            <p class="muted-text">No AI analysis run yet.</p>
+          </div>
+        </section>
+
+        <section>
           <h2>Export</h2>
           <label class="field">
             <span>ZIP name</span>
@@ -152,6 +162,34 @@
         <img id="compareImageB" alt="Second comparison" />
       </div>
       <button id="closeCompareBtn" type="button">Close</button>
+    </dialog>
+
+    <dialog id="settingsDialog">
+      <h2>AI Provider Settings</h2>
+      <label class="field">
+        <span>Provider</span>
+        <select id="aiProviderSelect">
+          <option value="claude">Claude (Anthropic)</option>
+          <option value="gemini">Gemini (Google)</option>
+          <option value="openai">OpenAI</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Model</span>
+        <select id="aiModelSelect">
+          <option value="claude-haiku-4-5">claude-haiku-4-5</option>
+          <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+          <option value="gpt-4o-mini">gpt-4o-mini</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>API Key</span>
+        <input id="aiApiKeyInput" type="password" placeholder="Paste your API key here" />
+      </label>
+      <div class="dialog-actions">
+        <button id="saveSettingsBtn" type="button">Save</button>
+        <button id="closeSettingsBtn" type="button">Close</button>
+      </div>
     </dialog>
 
     <script src="/static/app.js"></script>
