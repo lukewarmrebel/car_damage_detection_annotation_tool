@@ -12,8 +12,8 @@ A brownfield web rewrite of an existing Python/Tkinter desktop app. Phase 1 stan
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Backend API** - FastAPI backend serves detection, annotation, ZIP export, and the frontend shell
-- [ ] **Phase 2: Browser UI** - Full annotation canvas wired to backend APIs — upload, detect, draw, export
+- [x] **Phase 1: Backend API** - FastAPI backend serves detection, annotation, ZIP export, and the frontend shell
+- [x] **Phase 2: Browser UI** - Full annotation canvas wired to backend APIs — upload, detect, draw, export
 - [ ] **Phase 3: AI Improvement** - Expanded damage classes, severity labels, and fine-tuning pipeline
 
 ## Phase Details
@@ -31,8 +31,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: FastAPI project setup, YOLO detection endpoint, session management
-- [ ] 01-02: Annotation edit endpoint, ZIP export endpoint, static file serving
+- [x] 01-01: FastAPI project setup, YOLO detection endpoint, session management
+- [x] 01-02: Annotation edit endpoint, ZIP export endpoint, static file serving
 
 ### Phase 2: Browser UI
 **Goal**: A fully functional browser annotation interface where users can upload images, trigger AI detection, draw and erase annotations, navigate a multi-image session, and download the ZIP export
@@ -49,8 +49,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Canvas component with zoom/pan, image navigation, and upload flow
-- [ ] 02-02: AI detection overlay, draw tools (circle, rect, text), undo/erase/clear, ZIP download
+- [x] 02-01: Canvas component with zoom/pan, image navigation, and upload flow
+- [x] 02-02: AI detection overlay, draw tools (circle, rect, text), undo/erase/clear, ZIP download
 
 **UI hint**: yes
 
@@ -77,6 +77,6 @@ Order: 1 → (2 ∥ 3)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Backend API | 0/2 | Not started | - |
-| 2. Browser UI | 0/2 | Not started | - |
+| 1. Backend API | 2/2 | Complete | 2026-05-22 |
+| 2. Browser UI | 2/2 | Complete | 2026-05-22 |
 | 3. AI Improvement | 0/2 | Not started | - |

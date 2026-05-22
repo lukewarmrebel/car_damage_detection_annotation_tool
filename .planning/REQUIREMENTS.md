@@ -3,19 +3,19 @@
 ## v1 Requirements
 
 ### Web Backend
-- [ ] **BACK-01**: User can POST an image and receive bounding-box detections with class names and confidence scores
-- [ ] **BACK-02**: User can POST annotation edits (add/remove shapes) and receive the annotated image
-- [ ] **BACK-03**: User can GET a ZIP of all annotated images in a session
-- [ ] **BACK-04**: Backend serves the frontend and static assets
+- [x] **BACK-01**: User can POST an image and receive bounding-box detections with class names and confidence scores
+- [x] **BACK-02**: User can POST annotation edits (add/remove shapes) and receive the annotated image
+- [x] **BACK-03**: User can GET a ZIP of all annotated images in a session
+- [x] **BACK-04**: Backend serves the frontend and static assets
 
 ### Web Frontend
-- [ ] **FRONT-01**: User can upload one or more images from the browser
-- [ ] **FRONT-02**: User can trigger AI detection and see bounding boxes overlaid on the image
-- [ ] **FRONT-03**: User can draw circle, rectangle, and text annotations on the canvas
-- [ ] **FRONT-04**: User can erase, undo, and clear annotations
-- [ ] **FRONT-05**: User can zoom and pan the image canvas
-- [ ] **FRONT-06**: User can navigate between uploaded images
-- [ ] **FRONT-07**: User can download a ZIP of all annotated images
+- [x] **FRONT-01**: User can upload one or more images from the browser
+- [x] **FRONT-02**: User can trigger AI detection and see bounding boxes overlaid on the image
+- [x] **FRONT-03**: User can draw circle, rectangle, and text annotations on the canvas
+- [x] **FRONT-04**: User can erase, undo, and clear annotations
+- [x] **FRONT-05**: User can zoom and pan the image canvas
+- [x] **FRONT-06**: User can navigate between uploaded images
+- [x] **FRONT-07**: User can download a ZIP of all annotated images
 
 ### AI Improvement
 - [ ] **AI-01**: Fine-tuning pipeline (script + docs) that takes a labelled dataset and produces a new best.pt
@@ -39,17 +39,17 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BACK-01 | Phase 1 | Pending |
-| BACK-02 | Phase 1 | Pending |
-| BACK-03 | Phase 1 | Pending |
-| BACK-04 | Phase 1 | Pending |
-| FRONT-01 | Phase 2 | Pending |
-| FRONT-02 | Phase 2 | Pending |
-| FRONT-03 | Phase 2 | Pending |
-| FRONT-04 | Phase 2 | Pending |
-| FRONT-05 | Phase 2 | Pending |
-| FRONT-06 | Phase 2 | Pending |
-| FRONT-07 | Phase 2 | Pending |
+| BACK-01 | Phase 1 | Complete |
+| BACK-02 | Phase 1 | Complete |
+| BACK-03 | Phase 1 | Complete |
+| BACK-04 | Phase 1 | Complete |
+| FRONT-01 | Phase 2 | Complete |
+| FRONT-02 | Phase 2 | Complete |
+| FRONT-03 | Phase 2 | Complete |
+| FRONT-04 | Phase 2 | Complete |
+| FRONT-05 | Phase 2 | Complete |
+| FRONT-06 | Phase 2 | Complete |
+| FRONT-07 | Phase 2 | Complete |
 | AI-01 | Phase 3 | Pending |
 | AI-02 | Phase 3 | Pending |
 | AI-03 | Phase 3 | Pending |

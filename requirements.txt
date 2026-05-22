@@ -3,3 +3,6 @@ Pillow
 numpy
 ultralytics
 safetensors
+fastapi
+uvicorn[standard]
+python-multipart

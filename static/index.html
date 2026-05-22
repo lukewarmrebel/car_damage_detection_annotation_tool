@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Car Damage Annotation Tool</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Car Damage Annotation</h1>
+        <p id="statusText">Upload vehicle photos to begin.</p>
+      </div>
+      <div class="top-actions">
+        <label class="upload-button">
+          <span>Upload</span>
+          <input id="fileInput" type="file" accept="image/*" multiple />
+        </label>
+        <button id="exportBtn" type="button">Export ZIP (Ctrl+S)</button>
+        <button id="helpBtn" type="button">Help</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <section>
+          <h2>Images</h2>
+          <div class="nav-row">
+            <button id="prevBtn" type="button" title="Previous image">&lt;</button>
+            <span id="imageCounter">0 / 0</span>
+            <button id="nextBtn" type="button" title="Next image">&gt;</button>
+          </div>
+          <div id="imageList" class="image-list"></div>
+        </section>
+
+        <section>
+          <h2>Tools</h2>
+          <div class="tool-grid">
+            <button class="tool-btn active" type="button" data-tool="select">Move (M)</button>
+            <button class="tool-btn" type="button" data-tool="rectangle">Rect (1)</button>
+            <button class="tool-btn" type="button" data-tool="circle">Circle (2)</button>
+            <button class="tool-btn" type="button" data-tool="text">Text (3)</button>
+            <button class="tool-btn" type="button" data-tool="crop">Crop (4)</button>
+            <button class="tool-btn" type="button" data-tool="erase">Erase (5)</button>
+            <button id="detectBtn" type="button">Detect (D)</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Style</h2>
+          <label class="field">
+            <span>Color</span>
+            <input id="colorInput" type="color" value="#ff3347" />
+          </label>
+          <label class="field">
+            <span>Thickness</span>
+            <input id="thicknessInput" type="range" min="1" max="10" value="3" />
+          </label>
+          <label class="field">
+            <span>Font size</span>
+            <input id="fontSizeInput" type="range" min="10" max="48" value="18" />
+          </label>
+        </section>
+
+        <section>
+          <h2>Image</h2>
+          <div class="tool-grid">
+            <button type="button" data-edit="rotate" data-degrees="90">Rot 90</button>
+            <button type="button" data-edit="rotate" data-degrees="180">Rot 180</button>
+            <button type="button" data-edit="rotate" data-degrees="270">Rot 270</button>
+            <button type="button" data-edit="flip" data-axis="horizontal">Flip H</button>
+            <button type="button" data-edit="flip" data-axis="vertical">Flip V</button>
+            <button id="compareBtn" type="button">Compare</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Filters</h2>
+          <div class="tool-grid">
+            <button type="button" data-filter="grayscale">Gray</button>
+            <button type="button" data-filter="blur">Blur</button>
+            <button type="button" data-filter="sharpen">Sharpen</button>
+            <button type="button" data-filter="edge_detection">Edges</button>
+            <button type="button" data-filter="contrast">Contrast</button>
+            <button type="button" data-filter="color_thresholding">Threshold</button>
+            <button type="button" data-filter="laplacian">Laplacian</button>
+            <button type="button" data-filter="thermal">Thermal</button>
+            <button type="button" data-filter="high_pass">High-Pass</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Detection</h2>
+          <label class="field">
+            <span>Confidence</span>
+            <input id="confidenceInput" type="range" min="0.05" max="0.95" step="0.05" value="0.25" />
+          </label>
+          <label class="field">
+            <span>IOU</span>
+            <input id="iouInput" type="range" min="0.1" max="0.95" step="0.05" value="0.7" />
+          </label>
+        </section>
+
+        <section>
+          <h2>Export</h2>
+          <label class="field">
+            <span>ZIP name</span>
+            <input id="zipNameInput" type="text" value="annotated_images" />
+          </label>
+          <label class="field">
+            <span>Max size MB</span>
+            <input id="zipSizeInput" type="number" min="0" step="1" placeholder="No limit" />
+          </label>
+        </section>
+
+        <section>
+          <h2>Edit</h2>
+          <div class="stack">
+            <button id="undoBtn" type="button">Undo</button>
+            <button id="clearBtn" type="button">Clear Current Image</button>
+            <button id="resetViewBtn" type="button">Reset View</button>
+          </div>
+        </section>
+      </aside>
+
+      <section class="canvas-panel">
+        <canvas id="canvas"></canvas>
+        <div id="emptyState" class="empty-state">
+          <strong>No image loaded</strong>
+          <span>Use Upload to add one or more car damage photos.</span>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="helpDialog">
+      <h2>How To Use</h2>
+      <p>Upload images, select a tool, then draw directly on the canvas. Use Detect to add AI boxes to the current image.</p>
+      <p>Mouse wheel zooms. Middle-drag, Shift-drag, or Move mode pans. Right-click erases an annotation under the pointer.</p>
+      <p>Shortcuts: M move, 1 rectangle, 2 circle, 3 text, 4 crop, 5 erase, D detect, Ctrl+O upload, Ctrl+S export, Ctrl+Z undo, Delete clear, arrow keys navigate.</p>
+      <button id="closeHelpBtn" type="button">Close</button>
+    </dialog>
+
+    <dialog id="compareDialog">
+      <h2>Compare Images</h2>
+      <div class="compare-controls">
+        <select id="compareA"></select>
+        <select id="compareB"></select>
+      </div>
+      <div class="compare-grid">
+        <img id="compareImageA" alt="First comparison" />
+        <img id="compareImageB" alt="Second comparison" />
+      </div>
+      <button id="closeCompareBtn" type="button">Close</button>
+    </dialog>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

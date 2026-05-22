@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python Car_damage_annotation_compression_tool_with_AI_damage_detection.py)",
+      "Bash(python -c \"import tkinter as tk; root = tk.Tk\\(\\); root.title\\('Test'\\); print\\('Window created'\\); root.after\\(3000, root.destroy\\); root.mainloop\\(\\); print\\('Done'\\)\")",
+      "Bash(python -c ' *)",
+      "PowerShell(Start-Process python -ArgumentList \"Car_damage_annotation_compression_tool_with_AI_damage_detection.py\" -WorkingDirectory \"E:\\\\Projects\\\\ai agents\\\\cardamagedetection\\\\car_damage_detection_annotation_tool\" -PassThru | Select-Object Id, ProcessName)",
+      "PowerShell(Get-Process *)",
+      "Skill(gsd-new-project)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
+    ]
+  }
+}
