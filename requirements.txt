@@ -6,3 +6,6 @@ safetensors
 fastapi
 uvicorn[standard]
 python-multipart
+anthropic
+google-generativeai
+openai
