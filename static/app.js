@@ -619,7 +619,7 @@ document.addEventListener("keydown", (event) => {
 function updateModelOptions() {
   const models = {
     claude: ["claude-haiku-4-5"],
-    gemini: ["gemini-1.5-flash"],
+    gemini: ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-1.5-flash"],
     openai: ["gpt-4o-mini"],
   };
   aiModelSelect.innerHTML = (models[aiProviderSelect.value] || []).map(m => `<option value="${m}">${m}</option>`).join("");
@@ -689,7 +689,8 @@ async function runAIAnalysis() {
   if (state.aiProcessed.has(image.image_id) && !confirm("AI analysis already ran for this image. Run it again?")) return;
   aiAnalyzeBtn.disabled = true;
   setStatus("Running AI analysis...");
-  const model = aiModelSelect ? aiModelSelect.value : (provider === "claude" ? "claude-haiku-4-5" : provider === "gemini" ? "gemini-1.5-flash" : "gpt-4o-mini");
+  const defaultModel = provider === "claude" ? "claude-haiku-4-5" : provider === "gemini" ? "gemini-2.5-flash" : "gpt-4o-mini";
+  const model = localStorage.getItem("ai_model_" + provider) || defaultModel;
   const response = await fetch("/ai-analysis", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-AI-Api-Key": apiKey, "X-AI-Provider": provider, "X-AI-Model": model },
@@ -730,7 +731,8 @@ async function runBatchAnalysis() {
   for (let i = 0; i < state.images.length; i++) {
     const image = state.images[i];
     setBatchStatus(i, "spinner");
-    const model = provider === "claude" ? "claude-haiku-4-5" : provider === "gemini" ? "gemini-1.5-flash" : "gpt-4o-mini";
+    const defaultModel = provider === "claude" ? "claude-haiku-4-5" : provider === "gemini" ? "gemini-2.5-flash" : "gpt-4o-mini";
+    const model = localStorage.getItem("ai_model_" + provider) || defaultModel;
     try {
       const response = await fetch("/ai-analysis", {
         method: "POST",
@@ -761,3 +763,4 @@ autoAnalyzeBtn.addEventListener("click", () => runBatchAnalysis().catch(e => { c
 
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
+loadSettings();
