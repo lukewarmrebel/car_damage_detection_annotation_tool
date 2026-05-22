@@ -1,0 +1,97 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-05-22T12:57:10.6148341+05:30",
+  "phase": "3",
+  "phase_name": "AI Improvement",
+  "phase_dir": null,
+  "plan": 0,
+  "task": 0,
+  "total_tasks": 2,
+  "status": "paused",
+  "completed_tasks": [
+    {
+      "id": "01-01",
+      "name": "FastAPI project setup, YOLO detection endpoint, session management",
+      "status": "done"
+    },
+    {
+      "id": "01-02",
+      "name": "Annotation edit endpoint, ZIP export endpoint, static file serving",
+      "status": "done"
+    },
+    {
+      "id": "02-01",
+      "name": "Canvas component with zoom/pan, image navigation, and upload flow",
+      "status": "done"
+    },
+    {
+      "id": "02-02",
+      "name": "AI detection overlay, draw tools, undo/erase/clear, ZIP download",
+      "status": "done"
+    },
+    {
+      "id": "02-parity",
+      "name": "Tkinter feature parity expansion",
+      "status": "done",
+      "progress": "Added crop, rotate, flip, filters, compare/help dialogs, shortcuts, detection thresholds, ZIP options, and annotation save hardening."
+    }
+  ],
+  "remaining_tasks": [
+    {
+      "id": "03-01",
+      "name": "Expand class set, implement severity derivation logic, integrate into detection endpoint",
+      "status": "not_started"
+    },
+    {
+      "id": "03-02",
+      "name": "Fine-tuning pipeline script and documentation",
+      "status": "not_started"
+    }
+  ],
+  "blockers": [
+    {
+      "description": "In-app browser automation fails with a Windows permission issue while reading C:\\Users\\ADMIN\\AppData.",
+      "type": "technical",
+      "workaround": "Use manual browser testing plus HTTP smoke checks until browser automation access is fixed."
+    }
+  ],
+  "human_actions_pending": [
+    {
+      "action": "Manually browser-test upload, detect, draw, edit/filter, annotation save, and export ZIP using real sample images.",
+      "context": "HTTP and syntax checks pass, but automated in-app browser inspection is blocked locally.",
+      "blocking": false
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Use FastAPI with in-memory sessions.",
+      "rationale": "Keeps the existing Python/OpenCV/YOLO stack and matches the single-user portfolio demo scope.",
+      "phase": "1"
+    },
+    {
+      "decision": "Serve a plain HTML/CSS/JS frontend from FastAPI.",
+      "rationale": "Avoids frontend build tooling and keeps deployment simple for the portfolio app.",
+      "phase": "2"
+    },
+    {
+      "decision": "Web image edits mutate the session base image while annotations remain separate overlays.",
+      "rationale": "Matches the Tkinter state model and keeps annotation rendering/export predictable.",
+      "phase": "2"
+    }
+  ],
+  "uncommitted_files": [
+    "backend/app.py",
+    "backend/__init__.py",
+    "static/index.html",
+    "static/styles.css",
+    "static/app.js",
+    "requirements.txt",
+    ".planning/REQUIREMENTS.md",
+    ".planning/ROADMAP.md",
+    ".planning/STATE.md",
+    ".planning/HANDOFF.json",
+    ".planning/.continue-here.md"
+  ],
+  "next_action": "Start Phase 3 planning: define severity derivation and fine-tuning pipeline scope, then implement AI-03 before any model retraining work.",
+  "context_notes": "The app has moved from desktop/Tkinter toward a single-server FastAPI web app. Phase 1 and Phase 2 are implemented, with extra Tkinter feature parity added after Phase 2. The user is now exploring agentic features and has requested a pause handoff."
+}
